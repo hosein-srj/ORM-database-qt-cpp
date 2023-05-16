@@ -1,6 +1,8 @@
 # ORM-database-qt-cpp
 ORM Database for Qt C++ (SQL Server, MySQL, SQLLite)
 
+Just add DbContext.h and DbContext.cpp file to your Project
+
 Create DataBase
 ```cpp
 /// Set connection string in Constructor
