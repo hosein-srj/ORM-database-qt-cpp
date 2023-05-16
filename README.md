@@ -32,6 +32,4 @@ for(int i=0;i<users.size();i++){
     qDebug() << users[i]->getId() << users[i]->getName() << users[i]->getFamily();
 }
 
-(```)(```))))))
-
-F
+'''
