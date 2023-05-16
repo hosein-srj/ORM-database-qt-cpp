@@ -23,3 +23,13 @@ void User::setName(const QString& name)
 {
     m_name = name;
 }
+
+QString User::getFamily() const
+{
+    return m_family;
+}
+
+void User::setFamily(const QString& family)
+{
+    m_family = family;
+}

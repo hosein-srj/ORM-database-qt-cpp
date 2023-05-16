@@ -1,6 +1,5 @@
 #include "DbContext.h"
-#include <QMetaProperty>
-#include <QMetaType>
+
 
 DbContext::DbContext() {
 //    m_database = QSqlDatabase::addDatabase("QODBC");
@@ -43,108 +42,7 @@ void DbContext::close() {
     }
 }
 
-bool DbContext::createRecord(const QString& tableName, const QVariantMap& data) {
-    QSqlQuery query(m_database);
 
-    QStringList columnNames;
-    QStringList placeholders;
-    QList<QVariant> values;
-
-    for (const QString& key : data.keys()) {
-        columnNames << key;
-        placeholders << ":" + key;
-        values << data.value(key);
-    }
-
-    QString queryString = QString("INSERT INTO %1 (%2) VALUES (%3)")
-        .arg(tableName)
-        .arg(columnNames.join(", "))
-        .arg(placeholders.join(", "));
-
-    query.prepare(queryString);
-
-    for (int i = 0; i < values.size(); ++i) {
-        query.bindValue(":" + columnNames[i], values[i]);
-    }
-
-    if (!query.exec()) {
-        qDebug() << "Failed to create record:" << query.lastError().text();
-        return false;
-    }
-
-    return true;
-}
-
-QList<QVariantMap> DbContext::readRecords(const QString& tableName) {
-    QSqlQuery query(m_database);
-
-    QString queryString = QString("SELECT * FROM %1").arg(tableName);
-    query.prepare(queryString);
-
-    if (!query.exec()) {
-        qDebug() << "Failed to read records:" << query.lastError().text();
-        return QList<QVariantMap>();
-    }
-
-    QList<QVariantMap> records;
-
-    while (query.next()) {
-        QVariantMap record;
-        QSqlRecord sqlRecord = query.record();
-        for (int i = 0; i < sqlRecord.count(); ++i) {
-            record[sqlRecord.fieldName(i)] = query.value(i);
-        }
-        records.append(record);
-    }
-
-    return records;
-}
-
-bool DbContext::updateRecord(const QString& tableName, int id, const QVariantMap& data) {
-    QSqlQuery query(m_database);
-
-    QStringList updateStatements;
-    QList<QVariant> values;
-
-    for (const QString& key : data.keys()) {
-        updateStatements << QString("%1 = :%1").arg(key);
-        values << data.value(key);
-    }
-
-    QString queryString = QString("UPDATE %1 SET %2 WHERE id = :id")
-        .arg(tableName)
-        .arg(updateStatements.join(", "));
-
-    query.prepare(queryString);
-    query.bindValue(":id", id);
-
-    for (int i = 0; i < values.size(); ++i) {
-        query.bindValue(":" + data.keys().at(i), values.at(i));
-    }
-
-    if (!query.exec()) {
-        qDebug() << "Failed to update record:" << query.lastError().text();
-        return false;
-    }
-
-    return true;
-}
-
-bool DbContext::deleteRecord(const QString& tableName, int id) {
-    QSqlQuery query(m_database);
-
-    QString queryString = QString("DELETE FROM %1 WHERE id = :id").arg(tableName);
-
-    query.prepare(queryString);
-    query.bindValue(":id", id);
-
-    if (!query.exec()) {
-        qDebug() << "Failed to delete record:" << query.lastError().text();
-        return false;
-    }
-
-    return true;
-}
 
 bool DbContext::createTable(const QString& tableName, const QObject* object) {
     if (!object) {
@@ -170,6 +68,7 @@ bool DbContext::createTable(const QString& tableName, const QObject* object) {
     for (int i = 0; i < propertyCount; ++i) {
         const QMetaProperty metaProperty = metaObject->property(i);
         const QString propertyName = metaProperty.name();
+
         const QMetaType::Type propertyType = static_cast<QMetaType::Type>(metaProperty.type());
 
         QString columnDefinition = QString("%1 %2")
@@ -184,7 +83,7 @@ bool DbContext::createTable(const QString& tableName, const QObject* object) {
     query.prepare(queryString);
 
     if (!query.exec()) {
-        qDebug() << "Failed to create table:" << query.lastError().text();
+        qDebug() << "Failed to create table:" << query.lastError().text() << queryString;
         return false;
     }
 
@@ -204,4 +103,11 @@ QString DbContext::getSqlType(QMetaType::Type metaType) {
         default:
             return "VARCHAR(255)";
     }
+}
+
+bool DbContext::isNumber(const std::string& str)
+{
+    std::istringstream iss(str);
+    double value;
+    return (iss >> value) && (iss.eof());
 }
