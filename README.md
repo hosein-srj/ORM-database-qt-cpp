@@ -72,6 +72,6 @@ Select by Where Condiction
 QMap<QString, QVariant> whereConditions;
 whereConditions.insert("id", 2);
 whereConditions.insert("name", "hosein");
-std::vector<User*> users = dbContext.selectRecords<User>("users2",whereConditions);
+std::vector<User*> users = dbContext.selectRecords<User>("users",whereConditions);
 ```
 
