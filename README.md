@@ -1,15 +1,19 @@
 # ORM-database-qt-cpp
 ORM Database for Qt C++ (SQL Server, MySQL, SQLLite)
 
+Create DataBase
 ```cpp
-/// Create DataBase
+/// Set connection string in Constructor
 DbContext dbContext;
-
+```
+Create Table
+```
 User record;
-/// Create Table
+/// Define Table Column at User.h file
 dbContext.createTable("users2",&record);
-
-/// Insert Into Database Table
+```
+Insert Into Database Table
+```
 record.setId(3);
 record.setName("hasan");
 record.setFamily("sj3");
