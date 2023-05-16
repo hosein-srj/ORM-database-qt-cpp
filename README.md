@@ -1,6 +1,11 @@
 # ORM-database-qt-cpp
 ORM Database for Qt C++ (SQL Server, MySQL, SQLLite)
 
-(```)DbContext dbContext;(''')
+(```)
 
+
+#include <QGuiApplication>
+#include <QQmlApplicationEngine>
+#include <dbcontext.h>
+#include <users.h>
 
